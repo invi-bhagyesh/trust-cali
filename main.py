@@ -21,7 +21,7 @@ from datetime import datetime
 from pathlib import Path
 from flask import Flask, render_template, request, jsonify, send_from_directory
 
-app = Flask(__name__, template_folder="static")
+app = Flask(__name__, template_folder="static", static_folder="image", static_url_path="/image")
 
 OUT_DIR = Path("out")
 OUT_DIR.mkdir(exist_ok=True)

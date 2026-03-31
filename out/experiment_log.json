@@ -1,92 +1,92 @@
 [
   {
-    "participant_id": "7c79847a",
-    "condition": "A",
+    "participant_id": "a14311a9",
+    "condition": "B",
     "trial": 1,
     "product": "Sony WH-1000XM5",
     "decision": "accept",
-    "timestamp": "2026-03-31T12:46:22.326Z",
-    "latency_ms": 3477
+    "timestamp": "2026-03-31T13:04:02.018Z",
+    "latency_ms": 951
   },
   {
-    "participant_id": "7c79847a",
+    "participant_id": "a14311a9",
+    "condition": "B",
+    "trial": 2,
+    "product": "Kindle Paperwhite",
+    "decision": "reject",
+    "timestamp": "2026-03-31T13:04:03.736Z",
+    "latency_ms": 1230
+  },
+  {
+    "participant_id": "a14311a9",
+    "condition": "B",
+    "trial": 3,
+    "product": "Anker PowerCore 26800",
+    "decision": "accept",
+    "timestamp": "2026-03-31T13:04:05.097Z",
+    "latency_ms": 885
+  },
+  {
+    "participant_id": "a14311a9",
+    "condition": "B",
+    "trial": 4,
+    "product": "Logitech MX Master 3S",
+    "decision": "accept",
+    "timestamp": "2026-03-31T13:04:06.115Z",
+    "latency_ms": 555
+  },
+  {
+    "participant_id": "a14311a9",
+    "condition": "B",
+    "trial": 5,
+    "product": "Samsung T7 Shield 1TB",
+    "decision": "reject",
+    "timestamp": "2026-03-31T13:04:07.232Z",
+    "latency_ms": 655
+  },
+  {
+    "participant_id": "acd792c0",
+    "condition": "A",
+    "trial": 1,
+    "product": "Sony WH-1000XM5",
+    "decision": "reject",
+    "timestamp": "2026-03-31T13:04:56.128Z",
+    "latency_ms": 1309
+  },
+  {
+    "participant_id": "acd792c0",
     "condition": "A",
     "trial": 2,
     "product": "Kindle Paperwhite",
-    "decision": "accept",
-    "timestamp": "2026-03-31T12:46:23.829Z",
-    "latency_ms": 1268
+    "decision": "reject",
+    "timestamp": "2026-03-31T13:04:56.634Z",
+    "latency_ms": 33
   },
   {
-    "participant_id": "7c79847a",
+    "participant_id": "acd792c0",
     "condition": "A",
     "trial": 3,
     "product": "Anker PowerCore 26800",
     "decision": "accept",
-    "timestamp": "2026-03-31T12:46:24.905Z",
-    "latency_ms": 853
+    "timestamp": "2026-03-31T13:04:57.213Z",
+    "latency_ms": 110
   },
   {
-    "participant_id": "7c79847a",
+    "participant_id": "acd792c0",
     "condition": "A",
     "trial": 4,
     "product": "Logitech MX Master 3S",
-    "decision": "accept",
-    "timestamp": "2026-03-31T12:46:26.239Z",
-    "latency_ms": 1121
-  },
-  {
-    "participant_id": "7c79847a",
-    "condition": "A",
-    "trial": 5,
-    "product": "Samsung T7 Shield 1TB",
     "decision": "reject",
-    "timestamp": "2026-03-31T12:46:27.189Z",
-    "latency_ms": 736
+    "timestamp": "2026-03-31T13:04:57.801Z",
+    "latency_ms": 122
   },
   {
-    "participant_id": "3cc9fddd",
-    "condition": "A",
-    "trial": 1,
-    "product": "Sony WH-1000XM5",
-    "decision": "accept",
-    "timestamp": "2026-03-31T12:56:45.531Z",
-    "latency_ms": 3620
-  },
-  {
-    "participant_id": "3cc9fddd",
-    "condition": "A",
-    "trial": 2,
-    "product": "Kindle Paperwhite",
-    "decision": "accept",
-    "timestamp": "2026-03-31T12:56:46.814Z",
-    "latency_ms": 796
-  },
-  {
-    "participant_id": "3cc9fddd",
-    "condition": "A",
-    "trial": 3,
-    "product": "Anker PowerCore 26800",
-    "decision": "reject",
-    "timestamp": "2026-03-31T12:56:47.915Z",
-    "latency_ms": 636
-  },
-  {
-    "participant_id": "3cc9fddd",
-    "condition": "A",
-    "trial": 4,
-    "product": "Logitech MX Master 3S",
-    "decision": "accept",
-    "timestamp": "2026-03-31T12:56:49.280Z",
-    "latency_ms": 898
-  },
-  {
-    "participant_id": "3cc9fddd",
+    "participant_id": "acd792c0",
     "condition": "A",
     "trial": 5,
     "product": "Samsung T7 Shield 1TB",
     "decision": "accept",
-    "timestamp": "2026-03-31T12:56:50.682Z",
-    "latency_ms": 939
+    "timestamp": "2026-03-31T13:04:58.447Z",
+    "latency_ms": 176
   }
 ]

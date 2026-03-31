@@ -4,6 +4,10 @@
 
 A minimal web-based experiment that measures how AI agent presentation affects user trust decisions.
 
+| Consent | Trial | Done |
+|:---:|:---:|:---:|
+| ![Home](image/home.png) | ![Trial](image/mid.png) | ![Done](image/shoggoth.png) |
+
 **Two conditions (A/B) differing in agent name + tone:**
 
 | Condition | Agent Name | Tone                 | Example                                                                 |
@@ -18,10 +22,19 @@ A minimal web-based experiment that measures how AI agent presentation affects u
 ## Condition Logic
 
 - On session start, the server randomly assigns condition A or B
-- Condition A: agent named "Aria", warm blue background, friendly emoji avatar, conversational recommendation text
-- Condition B: agent named "System", neutral gray background, robot emoji avatar, formal recommendation text
+- Condition A: agent named "Aria", warm tone, orange-bordered card, conversational text
+- Condition B: agent named "System", formal tone, gray-bordered card, neutral text
 - AI accuracy is not varied (all recommendations are presented as genuine)
 - The only difference between conditions is the presentation cue
+
+## Features
+
+- Dark mode toggle (topbar)
+- Keyboard shortcuts: `A` to accept, `R` to pass
+- Fade transitions between trials
+- Decision feedback flash (green/red border)
+- Animated progress bar
+- Client-side latency measurement (sub-ms precision)
 
 ## How to Run
 
@@ -30,7 +43,7 @@ pip install -r requirements.txt
 python main.py
 ```
 
-Open http://localhost:5000 in your browser. Complete the 5 trials. Logs are saved to `out/`.
+Open http://localhost:5001 in your browser. Complete the 5 trials. Logs are saved to `out/`.
 
 ## Logging Implementation
 
@@ -72,6 +85,7 @@ main.py              # Flask server + experiment logic
 static/index.html    # Single-page experiment UI
 generate_sample.py   # Generate sample output data
 requirements.txt     # flask
+image/               # Screenshots
 out/
   experiment_log.json
   experiment_log.csv
