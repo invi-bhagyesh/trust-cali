@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Recommendation Study</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #fafafa;
+            --fg: #2a2a2a;
+            --muted: #777;
+            --faint: #bbb;
+            --border: #e5e5e5;
+            --surface: #fff;
+            --accent: #f07f5a;
+            --accent-dark: #e85d3b;
+            --green: #2d8a4e;
+            --green-bg: #f0faf3;
+            --red: #c0392b;
+            --red-bg: #fef2f2;
+        }
+        body.dark {
+            --bg: #181818;
+            --fg: #ddd;
+            --muted: #999;
+            --faint: #555;
+            --border: #333;
+            --surface: #222;
+            --green-bg: #1a2e1f;
+            --red-bg: #2e1a1a;
+        }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--fg);
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background 0.35s, color 0.35s;
+        }
+
+        /* ---- topbar ---- */
+        .topbar {
+            width: 100%;
+            background: var(--surface);
+            border-bottom: 2px solid var(--accent);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 45px;
+            transition: background 0.35s;
+        }
+        .topbar-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .theme-btn {
+            background: none;
+            border: none;
+            border-left: 2px solid var(--accent);
+            color: var(--accent);
+            font-size: 0.85rem;
+            padding: 0 1rem;
+            height: 100%;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.15s, color 0.15s;
+        }
+        .theme-btn:hover { background: var(--accent); color: #fff; }
+
+        .main {
+            max-width: 580px;
+            width: 92%;
+            padding: 3rem 0;
+            flex: 1;
+        }
+
+        /* ---- consent ---- */
+        #consent h1 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            line-height: 1.4;
+        }
+        #consent h1 span {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        #consent p { color: var(--muted); margin-bottom: 0.6rem; }
+        .consent-details {
+            margin-top: 1.5rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--border);
+        }
+        .consent-details li {
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin-bottom: 0.3rem;
+            list-style: none;
+            padding-left: 1rem;
+            position: relative;
+        }
+        .consent-details li::before {
+            content: "\2022";
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+        }
+        .btn-begin {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.55rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #fff;
+            background: var(--accent);
+            border: 2px solid var(--accent);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-begin:hover { background: transparent; color: var(--accent); }
+
+        /* ---- trial ---- */
+        #trial { display: none; }
+
+        .trial-step {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--faint);
+            margin-bottom: 1.2rem;
+        }
+
+        .progress-track { display: flex; gap: 5px; margin-bottom: 2rem; }
+        .progress-track .bar {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            transition: background 0.5s ease;
+        }
+        .progress-track .bar.filled { background: var(--accent); }
+
+        /* card fade */
+        .rec-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.3s, opacity 0.25s, transform 0.25s, background 0.35s;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .rec-card.warm { border-color: var(--accent); }
+        .rec-card.neutral { border-color: var(--faint); }
+        .rec-card.fade-out { opacity: 0; transform: translateY(-8px); }
+        .rec-card.fade-in { opacity: 0; transform: translateY(8px); }
+
+        /* decision flash */
+        .rec-card.flash-accept { border-color: var(--green) !important; }
+        .rec-card.flash-reject { border-color: var(--red) !important; }
+
+        .rec-agent {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+        }
+        .rec-agent.warm { color: var(--accent); }
+        .rec-agent.neutral { color: var(--faint); }
+
+        .rec-text {
+            font-size: 0.95rem;
+            line-height: 1.75;
+            color: var(--fg);
+        }
+
+        .product-label { text-align: center; margin-bottom: 1.5rem; }
+        .product-label h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+        .product-label .sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+            margin-top: 0.15rem;
+        }
+
+        .choice-row { display: flex; gap: 0.75rem; }
+        .choice-btn {
+            flex: 1;
+            padding: 0.6rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: 2px solid;
+            background: var(--surface);
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+        }
+        .choice-btn:active { transform: scale(0.97); }
+        .choice-btn.accept { color: var(--green); border-color: var(--green); }
+        .choice-btn.accept:hover { background: var(--green); color: #fff; }
+        .choice-btn.reject { color: var(--red); border-color: var(--red); }
+        .choice-btn.reject:hover { background: var(--red); color: #fff; }
+        .choice-btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+        .choice-btn:disabled:hover { background: var(--surface); color: inherit; }
+
+        .key-hint {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--faint);
+            margin-top: 0.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* ---- done ---- */
+        #done { display: none; }
+        #done h1 { font-size: 1.3rem; font-weight: 400; margin-bottom: 0.8rem; }
+        #done p { color: var(--muted); font-size: 0.9rem; }
+        .done-id {
+            display: inline-block;
+            margin-top: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--faint);
+            background: var(--surface);
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--border);
+        }
+
+        .footer {
+            width: 100%;
+            text-align: center;
+            padding: 1.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            color: var(--faint);
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <span class="topbar-title">Recommendation Study</span>
+        <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()">&#9790;</button>
+    </div>
+
+    <div class="main">
+
+        <!-- consent -->
+        <div id="consent">
+            <h1>We'd like your opinion on some <span>product recommendations</span>.</h1>
+            <p>An AI assistant will suggest 5 products. For each one, decide whether you'd accept or pass on the recommendation.</p>
+            <p>There are no right or wrong answers.</p>
+            <ul class="consent-details">
+                <li>Anonymous, no personal data collected</li>
+                <li>Takes about 2 minutes</li>
+                <li>Research prototype, IRB-exempt</li>
+            </ul>
+            <button class="btn-begin" onclick="startExperiment()">Begin Study</button>
+        </div>
+
+        <!-- trial -->
+        <div id="trial">
+            <div class="trial-step" id="trial-step"></div>
+            <div class="progress-track" id="progress-track"></div>
+
+            <div class="rec-card" id="rec-card">
+                <div class="rec-agent" id="rec-agent"></div>
+                <div class="rec-text" id="rec-text"></div>
+            </div>
+
+            <div class="product-label">
+                <h2 id="product-name"></h2>
+                <div class="sub" id="product-sub"></div>
+            </div>
+
+            <div class="choice-row">
+                <button class="choice-btn accept" id="btn-accept" onclick="respond('accept')">Accept</button>
+                <button class="choice-btn reject" id="btn-reject" onclick="respond('reject')">Pass</button>
+            </div>
+            <div class="key-hint">A &mdash; accept &nbsp;&nbsp;&nbsp; R &mdash; pass</div>
+        </div>
+
+        <!-- done -->
+        <div id="done">
+            <h1>Thank you for participating.</h1>
+            <p>Your responses have been recorded. You can close this page.</p>
+            <div class="done-id" id="done-id"></div>
+        </div>
+
+    </div>
+
+    <div class="footer">Research Prototype &middot; HumanAI Foundation</div>
+
+    <script>
+        let session = null;
+        let currentTrial = 0;
+        let trialStartTime = 0;
+        let transitioning = false;
+
+        // dark mode
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+            const btn = document.getElementById('theme-toggle');
+            btn.innerHTML = document.body.classList.contains('dark') ? '&#9788;' : '&#9790;';
+        }
+
+        // keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (transitioning || !session) return;
+            if (e.key === 'a' || e.key === 'A') respond('accept');
+            if (e.key === 'r' || e.key === 'R') respond('reject');
+        });
+
+        async function startExperiment() {
+            const res = await fetch("/api/start", { method: "POST" });
+            session = await res.json();
+
+            document.getElementById("consent").style.display = "none";
+            document.getElementById("trial").style.display = "block";
+
+            const track = document.getElementById("progress-track");
+            track.innerHTML = "";
+            for (let i = 0; i < session.trials.length; i++) {
+                const bar = document.createElement("div");
+                bar.className = "bar";
+                bar.id = "bar-" + i;
+                track.appendChild(bar);
+            }
+
+            showTrial();
+        }
+
+        function showTrial() {
+            if (currentTrial >= session.trials.length) {
+                finish();
+                return;
+            }
+
+            const trial = session.trials[currentTrial];
+            const isWarm = session.style.avatar === "friendly";
+            const card = document.getElementById("rec-card");
+
+            // fade in
+            card.classList.add("fade-in");
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    card.classList.remove("fade-in");
+                });
+            });
+
+            // progress
+            for (let i = 0; i < session.trials.length; i++) {
+                document.getElementById("bar-" + i).className = "bar" + (i < currentTrial ? " filled" : "");
+            }
+            document.getElementById("trial-step").textContent =
+                "Recommendation " + (currentTrial + 1) + " of " + session.trials.length;
+
+            // card content
+            card.className = "rec-card " + (isWarm ? "warm" : "neutral");
+
+            const agent = document.getElementById("rec-agent");
+            agent.className = "rec-agent " + (isWarm ? "warm" : "neutral");
+            agent.textContent = session.agent_name;
+
+            document.getElementById("rec-text").textContent = trial.recommendation;
+            document.getElementById("product-name").textContent = trial.product;
+            document.getElementById("product-sub").textContent = trial.category + "  \u00b7  " + trial.price;
+
+            document.getElementById("btn-accept").disabled = false;
+            document.getElementById("btn-reject").disabled = false;
+
+            transitioning = false;
+            trialStartTime = performance.now();
+        }
+
+        async function respond(decision) {
+            if (transitioning) return;
+            const acceptBtn = document.getElementById("btn-accept");
+            const rejectBtn = document.getElementById("btn-reject");
+            if (acceptBtn.disabled) return;
+
+            transitioning = true;
+            const latency = Math.round(performance.now() - trialStartTime);
+            const trial = session.trials[currentTrial];
+
+            acceptBtn.disabled = true;
+            rejectBtn.disabled = true;
+
+            // flash card border
+            const card = document.getElementById("rec-card");
+            card.classList.add(decision === 'accept' ? "flash-accept" : "flash-reject");
+
+            // fill progress bar
+            document.getElementById("bar-" + currentTrial).className = "bar filled";
+
+            // log
+            await fetch("/api/log", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    participant_id: session.participant_id,
+                    condition: session.condition,
+                    trial: trial.trial,
+                    product: trial.product,
+                    decision: decision,
+                    timestamp: new Date().toISOString(),
+                    latency_ms: latency,
+                }),
+            });
+
+            // fade out then show next
+            setTimeout(() => {
+                card.classList.remove("flash-accept", "flash-reject");
+                card.classList.add("fade-out");
+
+                setTimeout(() => {
+                    card.classList.remove("fade-out");
+                    currentTrial++;
+                    showTrial();
+                }, 250);
+            }, 200);
+        }
+
+        function finish() {
+            document.getElementById("trial").style.display = "none";
+            document.getElementById("done").style.display = "block";
+            document.getElementById("done-id").textContent = "ID: " + session.participant_id;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+\documentclass[12pt]{article}
+
+\usepackage[a4paper,margin=0.75in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{needspace}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+
+\vspace*{2cm}
+{\Large GSoC 2026 Project Proposal}\\[2em]
+{\huge\bfseries Humanlike AI Systems and\\[0.3em]Trust Attribution}\\[1.5em]
+{\large Measuring Trust Hysteresis Under Cue Switching}\\[2em]
+{\Large Organization: HumanAI Foundation / ISSR}
+
+\vfill
+
+{\Large\textbf{MENTORS}}\\[0.5em]
+{\large Andrya Allen (University of Alabama)\\[0.3em]
+Dr.~Xinyue Ye (University of Alabama)\\[0.3em]
+Dr.~Kelsey Chappetta (University of Alabama)\\[0.3em]
+Dr.~Andrea Underhill (University of Alabama)}
+
+\vfill
+\vfill
+
+{\Large\textbf{AUTHOR}}\\[0.5em]
+{\large Bhagyesh Kumar}
+
+\vfill
+
+\end{titlepage}
+
+\begin{center}
+{\LARGE\bfseries Table of Contents}
+\end{center}
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction and Contributor Information}
+
+\begin{itemize}
+\item \textbf{Name:} Bhagyesh Kumar
+\item \textbf{Email:} invi.bhagyesh@gmail.com
+\item \textbf{University:} MIT Manipal, India
+\item \textbf{Majors:} Mathematics and Computing
+\item \textbf{GitHub:} \href{https://github.com/invi-bhagyesh}{\texttt{github.com/invi-bhagyesh}}
+\item \textbf{Website:} \href{https://invi-bhagyesh.github.io/}{\texttt{invi-bhagyesh.github.io}}
+\item \textbf{LinkedIn:} \href{https://www.linkedin.com/in/invi-bhagyesh/}{\texttt{linkedin.com/in/invi-bhagyesh}}
+\end{itemize}
+
+\section{Abstract}
+
+As AI assistants adopt humanlike names, conversational tone, and confident framing, users form trust not from the system's actual reliability but from its \emph{presentation}. Existing research measures trust under static interface conditions: one cue configuration per participant. But real-world AI systems rebrand, update, and shift personality across versions. What happens to user trust when the interface cues change?
+
+We propose building an open-source experimentation platform that measures \textbf{trust hysteresis}: the phenomenon where trust's current level depends not just on the present cue configuration, but on the \emph{history} of cues the user has experienced. Our platform implements a multi-phase within-subject design where AI interface cues (name, tone, confidence framing) switch mid-task while AI accuracy remains fixed. By logging behavioral trust metrics at trial-level resolution (accept/override decisions, response latency, optional confidence ratings), we can measure whether trust fully recovers after a cue switch or exhibits permanent displacement.
+
+The platform is modular and open-source: future researchers can add new cue dimensions, decision tasks, and analysis pipelines. The core scientific contribution, the first behavioral measurement of trust hysteresis under cue switching in human-AI interaction, is publishable independent of the platform.
+
+\section{Technical Details}
+
+\subsection{Background: Trust Calibration in Human-AI Interaction}
+
+Trust calibration, the alignment between a user's trust and the system's actual reliability, is widely recognized as critical for safe human-AI collaboration. Jensen et al.~(2020)~\cite{jensen2020} demonstrated that humanlike communication style affects both perceived anthropomorphism and trust calibration, with low-reliability systems inducing overtrust and high-reliability systems inducing undertrust regardless of communication style.
+
+Klingbeil et al.~(2024)~\cite{klingbeil2024} found in a large behavioral experiment that merely knowing advice comes from AI causes overreliance, even when the advice contradicts available contextual information. Li et al.~(2024)~\cite{li2024} showed that uncalibrated AI confidence (overconfident or underconfident) leads to both misuse and disuse.
+
+Critically, Dhuliawala et al.~(2023)~\cite{dhuliawala2023} studied trust \emph{dynamics}: they tracked trust evolution over time using a betting game and found that even a few confidently incorrect predictions damage trust with very slow recovery. Their work demonstrated that trust formation is path-dependent, but they studied trust disruption via \emph{AI errors}, not via \emph{interface cue changes}.
+
+\textbf{The gap}: No study has measured how trust responds when the AI's \emph{presentation} changes while its \emph{accuracy remains constant}. This is the trust hysteresis question.
+
+\subsection{Experimental Design}
+
+\subsubsection{Cue Dimensions}
+
+We manipulate three cue dimensions, each with two levels:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+Dimension & Level A (Anthropomorphic) & Level B (Neutral) \\
+\midrule
+\textbf{Name} & ``Aria'' & ``System'' \\
+\textbf{Tone} & Warm, conversational & Formal, technical \\
+\textbf{Confidence} & ``I'm confident this is X'' & ``Probability of X: 78\%'' \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All three switch simultaneously between conditions A and B. (An ablation can switch them one at a time.)
+
+\subsubsection{Decision Task}
+
+Participants perform a \textbf{medical triage classification task} (simplified, no domain expertise needed): given a brief patient vignette, classify urgency as ``High,'' ``Medium,'' or ``Low.'' The AI provides a recommendation for each trial.
+
+\begin{itemize}
+\item \textbf{AI accuracy}: Fixed at 75\% across all conditions and phases. On 25\% of trials, the AI gives a deliberately wrong recommendation (pre-generated pattern with fixed seed).
+\item \textbf{30 trials per participant}: 10 baseline, 10 switch, 10 return.
+\item \textbf{Vignettes}: Pre-written, difficulty-balanced across phases, with ground truth labels. Target: 55--65\% human accuracy without AI, so the AI's 75\% is genuinely helpful.
+\end{itemize}
+
+\subsubsection{Conditions}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+Group & Phase 1 (1--10) & Phase 2 (11--20) & Phase 3 (21--30) \\
+\midrule
+\textbf{Control-A} & Cue A & Cue A & Cue A \\
+\textbf{Control-B} & Cue B & Cue B & Cue B \\
+\textbf{Switch A$\to$B$\to$A} & Cue A & Cue B & Cue A \\
+\textbf{Switch B$\to$A$\to$B} & Cue B & Cue A & Cue B \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The two switch conditions test whether hysteresis depends on the \emph{direction} of the switch.
+
+\needspace{6\baselineskip}
+\subsection{Behavioral Instrumentation}
+
+Per-trial event schema:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+Field & Description \\
+\midrule
+\texttt{participant\_id} & Unique identifier \\
+\texttt{condition} & Group (control-A, control-B, switch-AB, switch-BA) \\
+\texttt{phase} & Current phase (1, 2, or 3) \\
+\texttt{trial\_number} & 1--30 \\
+\texttt{ai\_recommendation} & What the AI suggested \\
+\texttt{ai\_correct} & Whether the AI was correct on this trial \\
+\texttt{decision} & Participant's final choice \\
+\texttt{followed\_ai} & Boolean: did participant follow the AI? \\
+\texttt{latency\_ms} & Time from trial presentation to decision \\
+\texttt{confidence} & Optional: participant's confidence (1--5) \\
+\texttt{timestamp} & ISO timestamp \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Primary Analyses}
+
+\textbf{Trust hysteresis test:}
+\begin{itemize}
+\item $H_1$: In the switch group, Phase 3 reliance rate differs significantly from Phase 1, despite identical cue configuration.
+\item $H_0$: Phase 3 reliance returns to Phase 1 levels (no hysteresis).
+\item Test: paired $t$-test or Wilcoxon signed-rank on per-participant Phase 1 vs.\ Phase 3 reliance rates.
+\end{itemize}
+
+\textbf{Cue effect:} Compare reliance rates between Control-A and Control-B to confirm the cue manipulation has an effect.
+
+\textbf{Asymmetry test:} Compare hysteresis effect size between Switch A$\to$B$\to$A and Switch B$\to$A$\to$B.
+
+\textbf{Latency analysis:} Response latency as a continuous measure of decision uncertainty. Do participants slow down immediately after the cue switch?
+
+\textbf{Trial-level dynamics:} Logistic mixed-effects model:
+\[
+\text{logit}(P(\text{follow AI})) = \beta_0 + \beta_1 \cdot \text{phase} + \beta_2 \cdot \text{trial\_within\_phase} + \beta_3 \cdot \text{ai\_correct\_prev} + u_i
+\]
+
+\subsection{Platform Architecture}
+
+\textbf{Frontend}: React/Next.js SPA with consent page, condition randomization, task interface (vignette + AI recommendation panel + decision buttons + confidence slider), and cue switching state machine.
+
+\textbf{Backend}: Express.js or Next.js API routes for condition assignment (randomized block design), trial logging (JSON event per trial), and CSV/JSON export. File-based storage for MVP, optional SQLite for scaling.
+
+\textbf{Modularity}: Cue manipulation is configuration-driven. Adding new dimensions requires only extending the config object and the corresponding UI component.
+
+\section{Screening Task Results}
+
+The screening task prototype is in the GitHub repository \href{https://github.com/invi-bhagyesh/trust-experiment}{\texttt{invi-bhagyesh/trust-experiment}}.
+
+\textbf{Implementation}: Flask server (\texttt{main.py}) serves a single-page HTML experiment. On session start, randomly assigns condition A (``Aria'', warm tone, blue theme) or B (``System'', formal tone, gray theme). Participant completes 5 product recommendation trials, accepting or rejecting each.
+
+\textbf{Condition logic}: The only difference between A and B is agent name, tone of recommendation text, background color, and avatar. Products and descriptions are identical.
+
+\textbf{Logging}: Client-side \texttt{performance.now()} measures latency (sub-ms precision). Each trial POSTs JSON to server, which writes to \texttt{out/experiment\_log.json} and \texttt{out/experiment\_log.csv}.
+
+\textbf{Sample output}: 6 simulated participants, 30 trials. Condition A showed higher accept rates (consistent with warm-tone hypothesis).
+
+\section{Project Deliverables}
+
+The project builds a \textbf{modular, open-source experimentation platform} for studying trust calibration in AI-assisted decision systems, with the trust hysteresis design as its first experiment.
+
+\subsection{Objective and Implementation Details}
+
+\begin{itemize}
+\item \textbf{Experimental Web Application:}
+\begin{itemize}
+\item React/Next.js frontend with consent, condition assignment, multi-phase task, cue switching.
+\item Lightweight backend for condition assignment, trial logging, data export.
+\item Deployable locally or on Vercel/Render.
+\end{itemize}
+
+\item \textbf{Cue Manipulation System:}
+\begin{itemize}
+\item Configuration-driven, supporting 3+ cue dimensions.
+\item Multi-phase switching logic at trial boundaries.
+\item Extensible to new dimensions without code changes.
+\end{itemize}
+
+\item \textbf{Behavioral Task Module:}
+\begin{itemize}
+\item 30 medical triage vignettes, difficulty-balanced, with ground truth.
+\item AI accuracy fixed at 75\% (pre-generated error pattern).
+\item Accept/override interface with optional confidence slider.
+\end{itemize}
+
+\item \textbf{Instrumentation:}
+\begin{itemize}
+\item Full per-trial event schema (11 fields).
+\item Client-side latency measurement.
+\item JSON and CSV export.
+\end{itemize}
+
+\item \textbf{Analysis Notebook:}
+\begin{itemize}
+\item Simulated dataset for 100 participants across 4 conditions.
+\item Reliance/override rates by condition and phase.
+\item Trust hysteresis test (Phase 1 vs.\ Phase 3).
+\item Logistic mixed-effects model.
+\item Trial-by-trial trust trajectory visualization.
+\end{itemize}
+
+\item \textbf{Documentation:}
+\begin{itemize}
+\item README, deployment guide, researcher guide, schema specification.
+\end{itemize}
+\end{itemize}
+
+\subsection{Stretch Goals}
+
+\begin{enumerate}
+\item \textbf{Additional cue dimension}: Visual identity (avatar vs.\ no avatar).
+\item \textbf{Second task type}: Product preference task to test cross-domain generalization.
+\item \textbf{Post-task trust ratings}: Validated Jian et al.\ (2000) trust scale for self-report vs.\ behavior comparison.
+\item \textbf{Pre-registration}: Draft and submit to OSF for actual data collection post-GSoC.
+\end{enumerate}
+
+\subsection{Timeline (175 hours)}
+
+\begin{itemize}
+\item \textbf{Community Bonding:} Literature review. Study Jensen~\cite{jensen2020}, Dhuliawala~\cite{dhuliawala2023}, Li~\cite{li2024}. Draft experimental protocol. Discuss with mentors.
+
+\item \textbf{Week 1:} Set up React/Next.js. Landing page, consent, participant ID, condition randomization.
+
+\item \textbf{Week 2:} Task interface: vignette display, AI recommendation panel, decision buttons. Single trial end-to-end.
+
+\item \textbf{Week 3:} Full cue manipulation system (3 dimensions). Configuration-driven condition manager. Multi-phase switching logic.
+
+\item \textbf{Week 4:} Write 30 triage vignettes with ground truth. AI accuracy control (75\% fixed pattern). Internal pilot.
+
+\item \textbf{Week 5:} Logging backend. Per-trial event schema. Full 30-trial session produces correct log. JSON + CSV export.
+
+\item \textbf{Week 6 (Midterm):} Generate simulated dataset (100 participants, 4 conditions). Begin analysis notebook. Demo to mentors.
+
+\item \textbf{Week 7:} Analysis: reliance rates, override rates, latency by condition/phase. Trust hysteresis test.
+
+\item \textbf{Week 8:} Mixed-effects model. Visualizations: trust trajectories, phase transitions, latency heatmaps.
+
+\item \textbf{Week 9:} Polish UI. Confidence slider. Post-task trust questionnaire. Cross-browser testing.
+
+\item \textbf{Week 10:} Stretch goals: visual identity cue, second task type. Pre-registration draft if time permits.
+
+\item \textbf{Week 11:} Documentation: README, deployment guide, researcher guide, schema spec.
+
+\item \textbf{Week 12:} Final polish. Clean codebase. Discuss data collection and paper with mentors.
+\end{itemize}
+
+\section{Other Information}
+
+\subsection{Why HumanAI / ISSR?}
+
+I am drawn to this project because it combines experimental design, behavioral measurement, and AI systems in a way that directly impacts how AI is deployed. My background in AI safety research (SPAR at Cornell, Algoverse) has made me think carefully about how users interact with AI systems and when that interaction goes wrong. Trust calibration is a concrete, measurable version of the broader alignment question: how do we ensure users rely on AI appropriately?
+
+\subsection{Academic Background}
+
+I am a sophomore at Manipal Institute of Technology, India, majoring in Mathematics and Computing. My coursework covers probability, statistics, and experimental design. I have independently worked through Stanford CS229 and ARENA (AI safety training).
+
+\subsection{Past Experience}
+
+\textbf{Published research.} ``TopoReformer: Mitigating Adversarial Attacks Using Topological Purification in OCR Models'' (AAAI 2026 Workshop, oral presentation in Singapore). arXiv:2511.15807. Required designing controlled experiments, running ablations, and rigorous analysis.
+
+\textbf{AI safety research.} SPAR Spring 2026 at Cornell (emergent misalignment with Prof.\ Lionel Levine). Algoverse AI Safety Fellowship (evaluation awareness). Both involve studying AI behavior under different conditions, directly analogous to studying user trust under different cue conditions.
+
+\textbf{Research leadership.} Lead MRM Research at MIT Manipal (40+ papers in 5 years).
+
+\textbf{Implementation.} Strong Python, Flask/APIs, statistical analysis (scipy, statsmodels), data visualization. Can learn React/Next.js for the frontend.
+
+\subsection{Commitments}
+
+175-hour project ($\sim$15 hrs/week, 12 weeks). Flexible university schedule. No conflicting obligations in summer 2026. Available via email, Slack, video calls in IST (GMT+5:30).
+
+\section{Risks and Mitigation}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{p{0.20\textwidth}p{0.08\textwidth}p{0.60\textwidth}}
+\toprule
+Risk & Likelihood & Mitigation \\
+\midrule
+Cue manipulation too subtle & Medium & Pilot with 5--10 users. If manipulation check fails, strengthen cue contrast (add avatar, change color scheme). \\[0.8em]
+Task too easy (ceiling effect) & Medium & Pre-test vignettes. Target 55--65\% human accuracy without AI. Increase complexity if needed. \\[0.8em]
+Insufficient participants & Medium & This is a platform project. Deliverable is platform + simulated analysis. Data collection is post-GSoC. Power: $n=40$ per group for $d=0.5$ at 80\% power. \\[0.8em]
+Latency noise & Low & Client-side \texttt{performance.now()} (sub-ms). No network delay in measurement. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\renewcommand{\refname}{References}
+\begin{thebibliography}{99}
+
+\bibitem{jensen2020}
+Jensen, Khan, Albayram. ``The Role of Behavioral Anthropomorphism in Human-Automation Trust Calibration.'' HCI International, 2020.
+
+\bibitem{klingbeil2024}
+Klingbeil, Gr\"utzner, Schreck. ``Trust and reliance on AI: An experimental study on the extent and costs of overreliance on AI.'' \textit{Computers in Human Behavior}, 2024.
+
+\bibitem{li2024}
+Li et al. ``Understanding the Effects of Miscalibrated AI Confidence on User Trust, Reliance, and Decision Efficacy.'' 2024.
+
+\bibitem{dhuliawala2023}
+Dhuliawala et al. ``A Diachronic Perspective on User Trust in AI under Uncertainty.'' EMNLP, 2023.
+
+\bibitem{meimandi2024}
+Meimandi, Bolton, Beling. ``Action Over Words: Predicting Human Trust in AI Partners Through Gameplay Behaviors.'' RO-MAN, 2024.
+
+\bibitem{li2023markov}
+Li, Lu, Yin. ``Modeling Human Trust and Reliance in AI-Assisted Decision Making: A Markovian Approach.'' AAAI, 2023.
+
+\bibitem{srinivasan2025}
+Srinivasan, Thomason. ``Adjust for Trust: Mitigating Trust-Induced Inappropriate Reliance on AI Assistance.'' arXiv, 2025.
+
+\bibitem{holbrook2024}
+Holbrook et al. ``Overtrust in AI Recommendations About Whether or Not to Kill.'' \textit{Scientific Reports}, 2024.
+
+\bibitem{doh2025}
+Doh, Goh, Kim. ``Beyond Overreliance: The Human-AI-System Concordance (HASC) Matrix.'' HFES, 2025.
+
+\end{thebibliography}
+
+\end{document}

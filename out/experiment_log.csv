@@ -1,0 +1,11 @@
+participant_id,condition,trial,product,decision,timestamp,latency_ms
+7c79847a,A,1,Sony WH-1000XM5,accept,2026-03-31T12:46:22.326Z,3477
+7c79847a,A,2,Kindle Paperwhite,accept,2026-03-31T12:46:23.829Z,1268
+7c79847a,A,3,Anker PowerCore 26800,accept,2026-03-31T12:46:24.905Z,853
+7c79847a,A,4,Logitech MX Master 3S,accept,2026-03-31T12:46:26.239Z,1121
+7c79847a,A,5,Samsung T7 Shield 1TB,reject,2026-03-31T12:46:27.189Z,736
+3cc9fddd,A,1,Sony WH-1000XM5,accept,2026-03-31T12:56:45.531Z,3620
+3cc9fddd,A,2,Kindle Paperwhite,accept,2026-03-31T12:56:46.814Z,796
+3cc9fddd,A,3,Anker PowerCore 26800,reject,2026-03-31T12:56:47.915Z,636
+3cc9fddd,A,4,Logitech MX Master 3S,accept,2026-03-31T12:56:49.280Z,898
+3cc9fddd,A,5,Samsung T7 Shield 1TB,accept,2026-03-31T12:56:50.682Z,939
