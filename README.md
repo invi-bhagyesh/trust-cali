@@ -4,9 +4,9 @@
 
 A minimal web-based experiment that measures how AI agent presentation affects user trust decisions.
 
-| Consent | Trial | Done |
-|:---:|:---:|:---:|
-| ![Home](image/home.png) | ![Trial](image/mid.png) | ![Done](image/shoggoth.png) |
+|         Consent         |          Trial          |          Done           |
+| :---------------------: | :---------------------: | :---------------------: |
+| ![Home](image/home.png) | ![Trial](image/mid.png) | ![Done](image/last.png) |
 
 **Two conditions (A/B) differing in agent name + tone:**
 
